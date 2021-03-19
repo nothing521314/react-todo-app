@@ -2,7 +2,7 @@ import TaskItem from "./TaskItem";
 
 function TaskList(props) {
   const tasks = props.task;
-  
+  console.log("tasklist: ", tasks)
   let elmTask = tasks.map((task, index) => {
       return <TaskItem key={task.key} id={index} task={task} 
                        onUpdateStatus={props.onUpdateStatus}

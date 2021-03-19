@@ -17,8 +17,8 @@ function App() {
                 status: status
                 }
     setTasks(tasks => [...tasks, data]);
-    console.log("local: ", localStorage.getItem("tasks", JSON.stringify(tasks)))
-    localStorage.setItem("tasks", JSON.stringify(tasks));
+    localStorage.setItem("tasks", JSON.stringify([...tasks, data]))
+    console.log("tasks", tasks)
   }
 
   const onUpdateStatus = (key) => {
@@ -28,7 +28,7 @@ function App() {
       setTasks(tasks => [...tasks]);
     }
     localStorage.setItem("tasks", JSON.stringify(tasks));
-
+ 
   }
 
   const onDelete = (key) => {
@@ -46,7 +46,7 @@ function App() {
     let index = findIndex(key);
     let editting = tasks[index];
     setEditting(editting => [...editting]);
-    console.log("edit: ", editting)
+    localStorage.setItem("tasks", JSON.stringify(tasks));
   }
 
   const onToggleForm = () => {
@@ -68,6 +68,12 @@ function App() {
     });
     return result;
   }
+
+  useEffect( () => {
+    if (localStorage && localStorage.getItem("tasks")) {
+      setTasks(JSON.parse(localStorage.getItem("tasks")));
+    }
+  },[setTasks]);
   
   function s4() {
     return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1)
@@ -82,16 +88,6 @@ function App() {
                                               edit={editting}
                                     /> : ""
                                              
-  useEffect( () => {
-    // Anything in here is fired on component mount.
-    if (localStorage && localStorage.getItem("tasks")) {
-      let tasks = JSON.parse(localStorage.getItem("tasks"));
-      console.log("task usefx", tasks);
-      setTasks(tasks);
-    }
-  },[]);
-
-
   return (
     <div className="container">
       <div className="text-center">
