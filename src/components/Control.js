@@ -1,11 +1,11 @@
 import Search from './Search';
 import Sort from './Sort';
 
-function Control() {
+function Control(props) {
   return (
     <div className="row mt-15">
     {/* search */}
-      <Search/>
+      <Search onSearch = {props.onSearch}/>
      {/* Sort */}
       <Sort/>
     

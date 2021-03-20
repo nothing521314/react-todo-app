@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+import { useEffect } from "react";
 
 function TaskForm(props) {
 
   const [inputValue, setInputValue] = useState({
+    key: "",
     name: "",
     status: false
   })
@@ -18,23 +20,41 @@ function TaskForm(props) {
   
   const onSubmit = (event) => {
     event.preventDefault();
-    inputValue.status === "true" ? (inputValue.status = true) : (inputValue.status = false);
-    props.onSubmit(inputValue.name, inputValue.status);
+    (inputValue.status === "true" || inputValue.status === true) ? (inputValue.status = true) : (inputValue.status = false);
+    props.onSubmit(inputValue);
     onClear();
     onCloseForm();
   }
 
   const onClear = () => {
-    setInputValue({name: "",
-                  status: false
-                  });
+    setInputValue({
+      name: "",
+      status: false
+      });
   }
+
+  useEffect( () => {
+    if (props.edit) {
+      let cache =   {
+        key: props.edit.key,
+        name: props.edit.name,
+        status: props.edit.status
+      };
+      setInputValue(cache)
+    } else if (!props.edit) {
+      setInputValue({
+        key: "",
+        name: "",
+        status: false
+      })
+    }
+  },[props.edit]);
 
   return (
     <div className="col-xs-4 col-sm-4 col-md-4 col-lg-4">
       <div className="panel panel-warning">
         <div className="panel-heading">
-          <h3 className="panel-title">Add
+          <h3 className="panel-title">{inputValue.key ? "Editting" : "Adding"}
             <span className="fa fa-times-circle fl-right"
                   onClick={onCloseForm}>
             </span>

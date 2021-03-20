@@ -60,3 +60,8 @@
 .fa-times-circle:hover {
   color: rgb(187, 0, 0)
 }
+
+.title-h1 {
+  color: darkred;
+  font-weight: 700;
+}

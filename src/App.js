@@ -9,16 +9,27 @@ function App() {
   let [tasks, setTasks] = useState([]);
   let [editting, setEditting] = useState([]);
   let [isDisplayForm, setIsDisplayForm] = useState(false);
+  let [filter, setFilter] = useState({
+    name: "",
+    status: -1
+  })
+  let [search, setSeacrch] = useState({
+    keyword: ""
+  })
 
-  const onSubmit = (name, status) => {
-    let data = {
-                key: generateKey(),
-                name: name,
-                status: status
-                }
-    setTasks(tasks => [...tasks, data]);
-    localStorage.setItem("tasks", JSON.stringify([...tasks, data]))
-    console.log("tasks", tasks)
+  const onSubmit = (data) => {
+    let arr = tasks;
+
+    if (!data.key) {
+      data.key = generateKey()
+      arr.push(data);
+    } else {
+      let index = findIndex(data.key);
+      arr[index] = data;
+    }
+    setTasks(arr);
+    setEditting(null);
+    localStorage.setItem("tasks", JSON.stringify(arr));
   }
 
   const onUpdateStatus = (key) => {
@@ -36,28 +47,43 @@ function App() {
     if (index !== -1) {
       tasks.splice(index, 1);
       setTasks(tasks => [...tasks]);
+      console.log(tasks)
     }
     localStorage.setItem("tasks", JSON.stringify(tasks));
     onCloseForm();
   }
 
   const onUpdate = (key) => {
-    onToggleForm();
     let index = findIndex(key);
-    let editting = tasks[index];
-    setEditting(editting => [...editting]);
-    localStorage.setItem("tasks", JSON.stringify(tasks));
+    // let editting = tasks[index];
+    setEditting(tasks[index]);
+    console.log("editting: ", editting)
+    onShowForm();
+  }
+
+  const onFilter = (name, status) => {
+    name = name.toLowerCase()
+    status = parseInt(status, 10);
+    setFilter({name, status});  
   }
 
   const onToggleForm = () => {
-    setIsDisplayForm(isDisplayForm = !isDisplayForm);
+    setIsDisplayForm(isDisplayForm = true);
+    setEditting(null);
   };
 
   const onCloseForm = () => {
     setIsDisplayForm(isDisplayForm = false);
+    setEditting(null);
   }
 
-  const onShowForm = () => {}
+  const onShowForm = () => {
+    setIsDisplayForm(isDisplayForm = true);
+  }
+
+  const onSearch = (keyword) => {
+    setSeacrch(keyword)
+  }
 
   const findIndex = (key) => {
     let result = -1;
@@ -73,7 +99,7 @@ function App() {
     if (localStorage && localStorage.getItem("tasks")) {
       setTasks(JSON.parse(localStorage.getItem("tasks")));
     }
-  },[setTasks]);
+  },[]);
   
   function s4() {
     return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1)
@@ -83,15 +109,43 @@ function App() {
     return s4() + s4() + "-" + s4() + s4() + s4() + "-" + s4()
   }
 
-  let elmTaskForm = isDisplayForm ? <TaskForm onCloseForm={onCloseForm} 
-                                              onSubmit={onSubmit}
-                                              edit={editting}
-                                    /> : ""
-                                             
+  let elmTaskForm = isDisplayForm ? <TaskForm
+    onCloseForm={onCloseForm} 
+    onSubmit={onSubmit}
+    edit={editting}
+  /> : ""
+      
+  if (filter) {
+    // let tasksFilter = tasks            
+    if (filter.name) {
+      tasks = tasks.filter(task => {
+        return task.name.toLowerCase().indexOf(filter.name) !== -1;
+      })
+    }
+    tasks = tasks.filter(task => {
+      if (filter.status === -1) {
+        return tasks
+      } else {
+        console.log("filter: ", tasks)
+        return task.status === (filter.status === 0 ? false : true);
+      }
+    })
+    // tasks = tasksFilter
+  }
+  
+
+  //search
+  // if (search) {
+  //   if (search.keyword) {
+  //     tasks = tasks.filter(task => {
+  //       return task.name.toLowerCase().indexOf(search.keyword) !== -1;
+  //     })
+  //   }
+
   return (
     <div className="container">
       <div className="text-center">
-        <h1>Todo App</h1>
+        <h1 className="title-h1">Todo App by Nothing</h1>
       </div>
       <div className="row">
         {/* Task form */}
@@ -103,11 +157,12 @@ function App() {
             <span className="fa fa-plus mr-5"></span>Add Job
           </button>
           {/* Search sort */}
-          <Control/>
+          <Control onSearch = {onSearch}/>
           <TaskList task = {tasks} 
                     onUpdateStatus={onUpdateStatus} 
                     onDelete={onDelete}
-                    onUpdate={onUpdate}/>
+                    onUpdate={onUpdate}
+                    onFilter={onFilter}/>
         </div>
       </div>
     </div> 
