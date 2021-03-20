@@ -36,3 +36,32 @@
     transform: rotate(360deg);
   }
 }
+
+.mt-15 {
+  margin-top: 15px;
+}
+
+.mr-5 {
+  margin-right: 5px;
+}
+
+.ml-5 {
+  margin-left: 5px;
+}
+
+.pr-5 {
+  padding-right: 5px;
+}
+
+.fl-right {
+  float: right;
+}
+
+.fa-times-circle:hover {
+  color: rgb(187, 0, 0)
+}
+
+.title-h1 {
+  color: darkred;
+  font-weight: 700;
+}
